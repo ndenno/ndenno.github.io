@@ -13,6 +13,7 @@ const count = document.querySelector('#count');
 
 const breatheBtn = document.querySelector('#breathebutton');
 const stopBtn = document.querySelector('#stop');
+const presetMenu = document.querySelector("#presets");
 
 const action1 = document.querySelector('#action1');
 const action2 = document.querySelector('#action2');
@@ -24,13 +25,26 @@ const action2Length = document.querySelector('#act2duration');
 const action3Length = document.querySelector('#act3duration');
 const action4Length = document.querySelector('#act4duration');
 
-const numCycles = document.querySelector('#numcycles')
+const act1Text = document.querySelector('output.act1text');
+const act2Text = document.querySelector('output.act2text');
+const act3Text = document.querySelector('output.act3text');
+const act4Text = document.querySelector('output.act4text');
+
+const numCycles = document.querySelector('#numcycles');
 const numCyclesText = document.querySelector('#numcyclestext');
+const numCyclesInt = document.querySelector("output.numcyclestext");
 
 const formActions = document.querySelector('#actions');
 
+
+//Set some initial values
 let actionCount = 0;
 let cycleCount = 0;
+act1Text.innerHTML = action1Length.value;
+act2Text.innerHTML = action2Length.value;
+act3Text.innerHTML = action3Length.value;
+act4Text.innerHTML = action4Length.value;
+numCyclesInt.innerHTML = numCycles.value;
 
 
 
@@ -108,6 +122,28 @@ function createObjects(){
     return list;
 }
 
+//Creates a list of breathingAction objects from the preset menu
+function createObjectsFromPreset(objectList){
+    let list = []
+    let objectListLength = objectList.length;
+    let a1 = objectList[0];
+    let a2 = objectList[1];
+
+    putIntoList(a1, list, 0);
+    putIntoList(a2, list, a1.duration);
+
+    if (objectListLength >=3){
+        let a3 = objectList[2];
+        putIntoList(a3, list, a1.duration+a2.duration);
+
+        if (objectListLength == 4){
+            let a4 = objectList[3];
+            putIntoList(a4, list, a1.duration+a2.duration+a3.duration);
+        }
+    }
+     return list;
+}
+
 //Constructor for breathingAction objects
 function breathingAction(action, duration){
     this.action = action;
@@ -159,7 +195,8 @@ function printList(actionList){
 //       EVENT LISTENERS      //
 ///////////////////////////////
 
-numCycles.addEventListener('change', function(){
+numCycles.addEventListener('input', function(){
+    numCyclesInt.value = this.value;
     if (this.value == 1){
         numCyclesText.innerText = 'cycle';
     }
@@ -168,37 +205,59 @@ numCycles.addEventListener('change', function(){
     }
 })
 
+//works but needs to be condensed
 breatheBtn.addEventListener('click', function(){
-    let actionList = createObjects();
-    let cycles = parseInt(numCycles.value);
-    breatheBtn.disabled= true;
-    breathe(actionList, cycles);
-    //printList(actionList);
-    let sessionLength = actionList.length*cycles;
-    let sessionMinutes = sessionLength;
-     let remainder = sessionMinutes%60;
-     sessionMinutes = parseInt(sessionMinutes/60);
-     console.log(` Session length: ${sessionMinutes} minutes and ${remainder} seconds`)
+    if (presetMenu.value == 'none'){
+        let actionList = createObjects();
+        let cycles = parseInt(numCycles.value);
+        breatheBtn.disabled= true;
+        breathe(actionList, cycles);
+        //printList(actionList);
+        let sessionLength = actionList.length*cycles;
+        let sessionMinutes = sessionLength;
+        let remainder = sessionMinutes%60;
+        sessionMinutes = parseInt(sessionMinutes/60);
+        console.log(` Session length: ${sessionMinutes} minutes and ${remainder} seconds`)
+    }
+    else{
+        let presetChoice = eval(presetMenu.value);
+        let actionList = createObjectsFromPreset(presetChoice);
+        let cycles = parseInt(numCycles.value);
+        breatheBtn.disabled= true;
+        breathe(actionList, cycles);
+        //printList(actionList);
+        let sessionLength = actionList.length*cycles;
+        let sessionMinutes = sessionLength;
+        let remainder = sessionMinutes%60;
+        sessionMinutes = parseInt(sessionMinutes/60);
+        console.log(` Session length: ${sessionMinutes} minutes and ${remainder} seconds`)
+    }
+    
   
 });
 
-action1Length.addEventListener('change', function(){
-    this.value = this.value;
+action1Length.addEventListener('input', function(){
+    act1Text.value = this.value;
+    presetMenu.value = "none";
+
     //console.log(this.value);
 });
 
-action2Length.addEventListener('change', function(){
-    this.value = this.value;
+action2Length.addEventListener('input', function(){
+    act2Text.value = this.value;
+    presetMenu.value = "none";
     //console.log(this.value);
 });
 
-action3Length.addEventListener('change', function(){
-    this.value = this.value;
+action3Length.addEventListener('input', function(){
+    act3Text.value = this.value;
+    presetMenu.value = "none";
     //console.log(this.value);
 });
 
-action4Length.addEventListener('change', function(){
-    this.value = this.value;
+action4Length.addEventListener('input', function(){
+    act4Text.value = this.value;
+    presetMenu.value = "none";
     //console.log(this.value);
 });
 
@@ -208,3 +267,27 @@ stopBtn.addEventListener('click', function(){
 
 
 
+////////////////////////////////
+//       PRESET EXERCISES     //
+///////////////////////////////
+
+const boxFour = [new breathingAction('Inhale',4),
+                new breathingAction('Hold',4),
+                new breathingAction('Exhale',4),
+                new breathingAction('Hold',4)];
+
+const boxSix = [new breathingAction('Inhale',6),
+                new breathingAction('Hold',6),
+                new breathingAction('Exhale',6),
+                new breathingAction('Hold',6)];
+
+const fourSevenEight = [new breathingAction('Inhale',4),
+                new breathingAction('Hold',7),
+                new breathingAction('Exhale',8)];
+
+const fourTwoEight = [new breathingAction('Inhale',4),
+                new breathingAction('Hold',2),
+                new breathingAction('Exhale',8)];
+
+const resonantFive = [new breathingAction('Inhale',5),
+                new breathingAction('Exhale',5)];
