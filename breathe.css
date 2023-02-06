@@ -14,12 +14,16 @@
     
  }
 
+ #presets{
+    //display:blovk;
+ }
+
  #count{
     margin-bottom:50px;
  }
 
  #breathaction:hover{
-    transform:scale(104%);
+    /* transform:scale(104%); */
  }
 
  #breathaction{
